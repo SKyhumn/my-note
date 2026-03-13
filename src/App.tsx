@@ -1,0 +1,74 @@
+import { useState, useEffect } from "react";
+
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import { auth } from "./SDK/firebase";
+import { onAuthStateChanged } from "firebase/auth";
+
+import type { User } from "firebase/auth";
+
+import MainPage from "./pages/MainPage";
+import WriteNote from "./pages/WriteNote";
+import WrittenNote from "./pages/WrittenNote";
+import AuthModal from "./components/modals/AuthModal";
+
+interface Category{
+    id: string;
+    name: string;
+}
+
+function App() {
+  const [user, setUser] = useState<User|null> (null);
+  const [loading, setLoading] = useState<boolean> (true);
+
+  const [category, setCategory] = useState<Category | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+      setLoading(false);
+    })
+
+    return () => unsubscribe();
+  },[]);
+
+  if (loading) return null;
+  
+  return (
+    <div className="w-screen h-screen bg-gray-100">
+
+      <BrowserRouter>
+
+        <Routes>
+
+          <Route 
+          path="/" 
+          element={
+            <MainPage 
+            user={user} 
+            category={category} 
+            setCategory={setCategory}
+            />}
+          />
+
+          <Route 
+          path="/write" 
+          element={<WriteNote category={category}/>}
+          />
+
+          <Route 
+          path="/:id" 
+          element={<WrittenNote/>}
+          />
+
+        </Routes>
+
+      </BrowserRouter>
+
+      {user==null&&<AuthModal/>}
+
+    </div>
+  )
+}
+
+export default App;

@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@theme{
+    --color-header:rgb(243 226 176);
+    --animate-modal-on:modal-on 0.3s ease-out 0s;
+}
+
+@keyframes modal-on{
+    0%{
+        opacity:0;
+        transform:translateY(3rem);
+    }
+    100%{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+.input{
+    @apply block w-90 h-10 pl-4 mt-5 border border-gray-400 rounded-3xl
+}
+
+.oauth{
+    @apply w-15 h-15 m-5 cursor-pointer
+}
+
+.check-err{
+    @apply w-90 -mb-2 mt-1 text-left text-red-500 text-[0.7rem];
+}
+
+.gray-btn{
+    @apply rounded-3xl bg-gray-200 text-black font-semibold cursor-pointer;
+}
+
+.black-btn{
+    @apply rounded-3xl bg-black text-white font-semibold cursor-pointer;
+}
+
+.red-btn{
+    @apply rounded-3xl bg-red-700 text-white font-semibold cursor-pointer;
+}
+
