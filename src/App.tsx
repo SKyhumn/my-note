@@ -10,6 +10,7 @@ import type { User } from "firebase/auth";
 import MainPage from "./pages/MainPage";
 import WriteNote from "./pages/WriteNote";
 import WrittenNote from "./pages/WrittenNote";
+import Edit from "./pages/Edit";
 import AuthModal from "./components/modals/AuthModal";
 
 interface Category{
@@ -61,11 +62,16 @@ function App() {
           element={<WrittenNote/>}
           />
 
+          <Route
+          path="/:id/edit"
+          element={<Edit category={category}/>}
+          />
+
         </Routes>
 
       </BrowserRouter>
 
-      {user==null&&<AuthModal/>}
+      {user==null && <AuthModal/>}
 
     </div>
   )

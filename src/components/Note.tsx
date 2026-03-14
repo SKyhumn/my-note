@@ -18,10 +18,10 @@ import del from "../assets/del.png";
 interface Props{
     id:string
     title:string;
-    createdAt:Timestamp;
+    noteDate:Timestamp;
 }
 
-export default function Note({ id, title, createdAt } : Props){
+export default function Note({ id, title, noteDate } : Props){
     const [modalOpen, setModalOpen] = useState<boolean> (false);
     const [message, setMessage] = useState<string> ("");
 
@@ -29,10 +29,15 @@ export default function Note({ id, title, createdAt } : Props){
 
     const uid: string | undefined = auth.currentUser?.uid;
 
-    const date = createdAt.toDate();
+    const date = noteDate.toDate();
 
     const seeMyNote = () => {
         nav(`/${id}`);
+    }
+
+    const goEditPage = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        nav(`/${id}/edit`);
     }
 
     // 삭제여부창 활성화
@@ -83,6 +88,7 @@ export default function Note({ id, title, createdAt } : Props){
 
                 <img 
                 src={modify} 
+                onClick={goEditPage}
                 className="w-5 cursor-pointer"
                 />
 

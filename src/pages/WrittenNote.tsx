@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { auth } from "../SDK/firebase";
-import { onAuthStateChanged } from "firebase/auth";
 
 import { db } from "../SDK/firebase";
 import { getDoc, deleteDoc, doc, Timestamp } from "firebase/firestore";
@@ -15,7 +14,7 @@ import SelectionModal from "../components/modals/SelectionModal";
 interface Note {
     title: string;
     content: string;
-    createdAt: Timestamp;
+    noteDate: Timestamp;
     categoryId: string | null;
 }
 
@@ -34,7 +33,7 @@ export default function WrittenNote(){
     if (!id) return null;
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async() => {
+        const getNote = async() => {
             if (!uid || !id) return;
 
             const noteRef = doc(db, "users", uid, "notes", id);
@@ -43,14 +42,18 @@ export default function WrittenNote(){
             if (snapshot.exists()) {
                 setNote(snapshot.data() as Note);
             }
-        });
+        };
 
-        return () => unsubscribe();
+        getNote();
     }, [id]);
 
     const deleteModalOpen = () => {
         setModalOpen(true);
         setModalMessage("노트를 삭제하시겠습니까?");
+    }
+
+    const goEditPage = () => {
+        nav(`/${id}/edit`);
     }
 
     const deleteAndGoMain = async() => {
@@ -88,7 +91,7 @@ export default function WrittenNote(){
                         </p>
 
                         <p className="mt-2 text-gray-400">
-                            {note.createdAt.toDate().toLocaleDateString()}
+                            {note.noteDate.toDate().toLocaleDateString()}
                         </p>
                         
                         <div className="
@@ -105,6 +108,7 @@ export default function WrittenNote(){
                     <div className="flex justify-end mt-10">
 
                         <button 
+                        onClick={goEditPage}
                         className="
                             black-btn 
                             w-20 p-2 mr-5 

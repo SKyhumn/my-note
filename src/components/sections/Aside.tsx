@@ -199,10 +199,15 @@ export default function Aside({ user, setCategory }: Props) {
                     <li
                     key={category.id}
                     onClick={() => setCategory(category)}
-                    className="flex justify-between items-center mt-4 font-medium"
+                    className="
+                        flex justify-between items-center 
+                        mt-4 
+                        font-medium"
                     >
-                        {category.name}
-
+                        <p className="truncate w-20">
+                            {category.name}
+                        </p>
+                        
                         <span className="flex justify-between w-16">
 
                             <img

@@ -28,7 +28,7 @@ export default function MyNotes({ category }: Props){
 
         const q = query(
             collection(db, "users", uid, "notes"),
-            orderBy("createdAt", "desc")
+            orderBy("noteDate", "desc")
         )
 
         const getNote = onSnapshot(q, (snapshot) => {
@@ -92,7 +92,7 @@ export default function MyNotes({ category }: Props){
                     key={note.id} 
                     id={note.id} 
                     title={note.title} 
-                    createdAt={note.createdAt}
+                    noteDate={note.noteDate}
                     />
                 ))}
 
