@@ -10,7 +10,7 @@ import type { User } from "firebase/auth";
 import MainPage from "./pages/MainPage";
 import WriteNote from "./pages/WriteNote";
 import WrittenNote from "./pages/WrittenNote";
-import Edit from "./pages/EditPage";
+import Edit from "./pages/EditNote";
 import AuthModal from "./components/modals/AuthModal";
 
 interface Category{
