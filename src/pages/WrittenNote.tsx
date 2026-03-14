@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 
 import { useParams } from "react-router-dom";
@@ -64,7 +65,7 @@ export default function WrittenNote(){
                             {note.createdAt.toDate().toLocaleDateString()}
                         </p>
                         
-                        <div className="w-full h-85 mt-5 overflow-y-scroll">
+                        <div className="w-full h-85 mt-5 overflow-y-scroll whitespace-pre-wrap">
                             {note.content}
                         </div>
 
