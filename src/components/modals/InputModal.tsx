@@ -65,8 +65,11 @@ export default function InputModal({ message, categoryName, setCategoryName, loa
                 >
                     닫기
                 </button>
+
             </div>
+
         </div>
+        
     </div>
   );
 }
