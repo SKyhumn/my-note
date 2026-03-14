@@ -74,7 +74,7 @@ export default function Edit({ category } : Props){
         await updateDoc(doc(db, "users", uid, "notes", id), {
             title:title,
             content:content,
-            noteDate:new Date(),
+            noteDate2:new Date(),
             categoryId:category?.id ?? null
         });
 
