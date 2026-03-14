@@ -1,15 +1,16 @@
 
 import { useState, useEffect } from "react";
 
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { auth } from "../SDK/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 
 import { db } from "../SDK/firebase";
-import { getDoc, doc, Timestamp } from "firebase/firestore";
+import { getDoc, deleteDoc, doc, Timestamp } from "firebase/firestore";
 
 import Header from "../components/sections/Header";
+import SelectionModal from "../components/modals/SelectionModal";
 
 interface Note {
     title: string;
@@ -21,15 +22,22 @@ interface Note {
 export default function WrittenNote(){
     const [note, setNote] = useState<Note | null>(null);
 
+    const [modalOpen, setModalOpen] = useState<boolean>(false);
+    const [modalMessage, setModalMessage] = useState<string>("");
+
     const { id } = useParams();
+
+    const nav = useNavigate();
+
+    const uid: string | undefined = auth.currentUser?.uid;
 
     if (!id) return null;
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (user) => {
-            if (!user || !id) return;
+        const unsubscribe = onAuthStateChanged(auth, async() => {
+            if (!uid || !id) return;
 
-            const noteRef = doc(db, "users", user.uid, "notes", id);
+            const noteRef = doc(db, "users", uid, "notes", id);
             const snapshot = await getDoc(noteRef);
 
             if (snapshot.exists()) {
@@ -39,6 +47,19 @@ export default function WrittenNote(){
 
         return () => unsubscribe();
     }, [id]);
+
+    const deleteModalOpen = () => {
+        setModalOpen(true);
+        setModalMessage("노트를 삭제하시겠습니까?");
+    }
+
+    const deleteAndGoMain = async() => {
+        if (!uid || !id) return;
+         
+        await deleteDoc(doc(db, "users", uid, "notes", id));
+
+        nav('/');
+    }
 
     return(
         <div>
@@ -55,7 +76,12 @@ export default function WrittenNote(){
                     mx-auto"
                 >
 
-                    <div className="w-full h-120 mt-5 p-5 rounded-2xl bg-white">
+                    <div className="
+                        w-full h-120 
+                        mt-5 p-5 
+                        rounded-2xl 
+                        bg-white"
+                    >
 
                         <p className="text-3xl font-bold">
                             {note.title}
@@ -65,7 +91,12 @@ export default function WrittenNote(){
                             {note.createdAt.toDate().toLocaleDateString()}
                         </p>
                         
-                        <div className="w-full h-85 mt-5 overflow-y-scroll whitespace-pre-wrap">
+                        <div className="
+                            w-full h-85 
+                            mt-5 
+                            overflow-y-scroll 
+                            whitespace-pre-wrap"
+                        >
                             {note.content}
                         </div>
 
@@ -83,6 +114,7 @@ export default function WrittenNote(){
                         </button>
 
                         <button 
+                        onClick={deleteModalOpen}
                         className="
                             red-btn 
                             w-20 p-2 
@@ -94,6 +126,12 @@ export default function WrittenNote(){
 
                 </div>
             )}
+
+            {modalOpen && <SelectionModal 
+            message={modalMessage} 
+            yes={deleteAndGoMain} 
+            no={() => setModalOpen(false)}
+            />}
 
         </div>
     );
