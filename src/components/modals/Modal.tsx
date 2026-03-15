@@ -1,9 +1,6 @@
-interface Props{
-    message: string;
-    onClose: () => void;
-}
+import type { ModalProps } from "../../types/ModalProps";
 
-export default function Modal({ message, onClose } : Props){
+export default function Modal({ message, onClose } : ModalProps){
     return(
         <div className="
             flex justify-center items-center 

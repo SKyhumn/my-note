@@ -6,13 +6,11 @@ import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { db } from "../../SDK/firebase";
 import { doc, setDoc } from "firebase/firestore";
 
+import type { Switch } from "../../types/Switch";
+
 import back from "../../assets/arrow.png"
 
-interface Props{
-    onSwitch: () => void;
-}
-
-export default function SignUp({ onSwitch }:Props){
+export default function SignUp({ onSwitch } : Switch){
     const [name, setName] = useState<string> ("");
     const [email, setEmail] = useState<string> ("");
     const [password, setPassword] = useState<string> ("");
@@ -26,6 +24,7 @@ export default function SignUp({ onSwitch }:Props){
     const [loading, setLoading] = useState<boolean> (false);
     const [err, setErr] = useState<null | string> (null);
 
+    // 회원가입 정보 유효성 검사
     const checkInfo=()=>{
         const nameCheck = name.trim().length > 0;
         const emailCheck = email.trim().length > 0 && email.includes("@");
@@ -43,11 +42,12 @@ export default function SignUp({ onSwitch }:Props){
         setPasswordValid(passwordCheck);
         setPasswordIsCorrect(passwordMatch);
 
-        if (nameCheck && emailCheck && passwordCheck && passwordMatch) {
+        if (nameValid && emailValid && passwordValid && passwordValid) {
             handleSignUp();
         }
     }
 
+    // 회원가입
     const handleSignUp = async() => {
         setLoading(true);
         setErr(null);
@@ -68,6 +68,7 @@ export default function SignUp({ onSwitch }:Props){
             setPasswordAgain("");
         } catch (error:any) {
             setErr(error.message);
+
             alert("회원가입에 실패했습니다."+err);
         } finally {
             setLoading(false);

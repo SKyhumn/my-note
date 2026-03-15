@@ -8,10 +8,12 @@ import logo from "../../assets/logo.png";
 export default function Header(){
     const nav = useNavigate();
 
+    // 메인 페이지로
     const goMain = () => {
         nav('/');
     }
 
+    // 로그아웃
     const handleSignOut = async() => {
         try{
             await signOut(auth);

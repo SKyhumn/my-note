@@ -35,18 +35,19 @@ export default function Edit({ category } : Props){
     const [modalOpen, setModalOpen] = useState<boolean> (false);
     const [modalMessage, setModalMessage] = useState<string> ("");
 
-    const nav = useNavigate();
-
     const { id } = useParams();
 
     const uid: string | undefined = auth.currentUser?.uid;
 
     const isDisabled = loading || title.trim().length === 0;
 
+    const nav = useNavigate();
+
     if (!id) return null;
 
+    // 노트 불러오기
     useEffect(() => {
-        const getNote = async() => {
+        const loadNotes = async() => {
             if (!uid || !id) return;
 
             const noteRef = doc(db, "users", uid, "notes", id);
@@ -60,9 +61,10 @@ export default function Edit({ category } : Props){
             }
         }
 
-        getNote();
+        loadNotes();
     }, [uid, id]);
 
+    // 노트 저장
     const saveNote = async() => {
         if (!uid || title.trim().length === 0) return;
 
@@ -82,11 +84,13 @@ export default function Edit({ category } : Props){
         setModalMessage("저장 되었습니다!");
     }
 
+    // 창 닫고 메인 페이지로
     const closeAndGoMain = () => {
         setModalOpen(false);
         goMain();
     }
 
+    // 메인 페이지
     const goMain = () => {
         nav('/');
     }

@@ -1,13 +1,6 @@
-interface Props {
-    message: string;
-    categoryName: string;
-    setCategoryName: (value: string) => void;
-    loading: boolean;
-    addCategoryAndClose: () => void;
-    onClose: () => void;
-}
+import type { InputModalProps } from "../../types/InputModalProps";
 
-export default function InputModal({ message, categoryName, setCategoryName, loading, addCategoryAndClose, onClose }: Props) {
+export default function InputModal({ message, categoryName, setCategoryName, loading, addCategoryAndClose, onClose } : InputModalProps) {
     const isDisabled = categoryName.trim().length === 0 || loading;
 
     return (

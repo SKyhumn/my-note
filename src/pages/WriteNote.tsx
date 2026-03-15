@@ -7,19 +7,12 @@ import { auth } from "../SDK/firebase";
 import { db } from "../SDK/firebase";
 import { collection, addDoc } from "firebase/firestore";
 
+import type { CategoryPresence } from "../types/CategoryPresence";
+
 import Header from "../components/sections/Header";
 import Modal from "../components/modals/Modal";
 
-interface Category{
-    id: string;
-    name: string;
-}
-
-interface Props{
-    category: Category | null;
-}
-
-export default function WriteNote({ category }: Props){
+export default function WriteNote({ category } : CategoryPresence){
     const [title, setTitle] = useState<string> ("");
     const [content, setContent] = useState<string> ("");
 
@@ -28,12 +21,18 @@ export default function WriteNote({ category }: Props){
     const [modalOpen, setModalOpen] = useState<boolean> (false);
     const [modalMessage, setModalMessage] = useState<string> ("");
 
-    const nav = useNavigate();
-
     const uid: string | undefined = auth.currentUser?.uid;
 
     const isDisabled = loading || title.trim().length === 0;
 
+    const nav = useNavigate();
+
+    // 메인 페이지
+    const goMain = () => {
+        nav('/');
+    }
+
+    // 노트 저장
     const saveNote = async() => {
         if (!uid || title.trim().length === 0) return;
 
@@ -53,13 +52,10 @@ export default function WriteNote({ category }: Props){
         setModalMessage("저장 되었습니다!");
     }
 
+    // 창 닫고 메인 페이지로
     const closeAndGoMain = () => {
         setModalOpen(false);
         goMain();
-    }
-
-    const goMain = () => {
-        nav('/');
     }
 
     return(

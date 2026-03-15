@@ -2,27 +2,21 @@ import { useState, useEffect } from "react";
 
 import { auth } from "../../SDK/firebase";
 
+import type { CategoryPresence } from "../../types/CategoryPresence";
+
 import { db } from "../../SDK/firebase";
 import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
 
 import Note from "../Note";
 
-interface Category{
-    id:string
-    name:string
-}
-
-interface Props{
-    category: Category | null
-}
-
-export default function MyNotes({ category }: Props){
+export default function MyNotes({ category } : CategoryPresence){
     const [notes, setNotes] = useState<any[]> ([]);
 
     const [search, setSearch] = useState<string> ("");
 
     const uid: string | undefined = auth.currentUser?.uid;
 
+    // 노트 불러오기
     useEffect(() => { 
         if (!uid) return;
 
@@ -31,7 +25,7 @@ export default function MyNotes({ category }: Props){
             orderBy("noteDate", "desc")
         )
 
-        const getNote = onSnapshot(q, (snapshot) => {
+        const loadNotes = onSnapshot(q, (snapshot) => {
             const noteArray: any[] = [];
 
             snapshot.forEach((doc) => {
@@ -44,9 +38,10 @@ export default function MyNotes({ category }: Props){
             setNotes(noteArray);
         })
 
-        return () => getNote();
+        return () => loadNotes();
     }, [uid]);
 
+    // 노트 필터
     const filteredNotes = notes.filter((note) =>{
         const matchCategory: boolean =
             category === null || note.categoryId === category.id;

@@ -4,17 +4,14 @@ import { signInWithPopup } from "firebase/auth";
 import { db } from "../../../SDK/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 
+import type { OAuthProps } from "../../../types/OAuthProps";
 import type { User } from "firebase/auth";
 
 import google from "../../../assets/google.png";
 import github from "../../../assets/github.svg";
 
-interface Props{
-    setLoading:(value:boolean) => void;
-    setErr:(err:string) => void;
-}
-
-export default function OAuth({ setLoading, setErr } : Props){
+export default function OAuth({ setLoading, setErr } : OAuthProps){
+    // OAuth 로그인
     const handleOAuthSignIn = async(provider:any) => {
         setLoading(true);
 
@@ -31,6 +28,7 @@ export default function OAuth({ setLoading, setErr } : Props){
         }
     }
 
+    // 유저가 존재하지 않을 때 firestore에 유저 추가
     const createUserIfNotExist = async(user:User) => {
         const userRef = doc(db, "users", user.uid);
         const userSnap = await getDoc(userRef);

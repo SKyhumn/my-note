@@ -1,9 +1,9 @@
 import { useState } from "react";
 
+import type { Mode } from "../../types/Mode";
+
 import SignIn from "../auth/SignIn";
 import SignUp from "../auth/SignUp";
-
-type Mode = "signin" | "signup";
 
 export default function AuthModal(){
     const [mode, setMode] = useState<Mode> ("signin");

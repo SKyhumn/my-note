@@ -3,19 +3,18 @@ import { useState } from "react";
 import { auth } from "../../../SDK/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 
+import type { Switch } from "../../../types/Switch";
+
 import OAuth from "./OAuth";
 
-interface Props {
-  onSwitch:() => void;
-}
-
-export default function Auth({ onSwitch } : Props){
+export default function Auth({ onSwitch } : Switch){
     const [email, setEmail] = useState<string> ("");
     const [password, setPassword] = useState<string> ("");
     
     const [loading, setLoading] = useState<boolean> (false);
     const [err, setErr] = useState<null | string> (null);
 
+    // 로그인
     const handleSignIn = async() => {
         setLoading(true);
         setErr(null);

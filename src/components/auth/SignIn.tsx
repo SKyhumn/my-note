@@ -1,10 +1,8 @@
+import type { Switch } from "../../types/Switch";
+
 import Auth from "./signin-elements/Auth";
 
-interface Props{
-    onSwitch: () => void;
-}
-
-export default function SignIn({ onSwitch } : Props){
+export default function SignIn({ onSwitch } : Switch){
     return(
         <div className="animate-modal-on">
             <Auth onSwitch={onSwitch}/>

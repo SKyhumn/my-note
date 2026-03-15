@@ -7,7 +7,7 @@ import { auth } from "../SDK/firebase";
 import { db } from "../SDK/firebase";
 import { deleteDoc, doc } from "firebase/firestore";
 
-import type { Timestamp } from "firebase/firestore";
+import type { NoteSummary } from "../types/NoteSummary";
 
 import SelectionModal from "./modals/SelectionModal";
 
@@ -15,26 +15,22 @@ import modify from "../assets/modify.png"
 import del from "../assets/del.png";
 
 
-interface Props{
-    id:string
-    title:string;
-    noteDate:Timestamp;
-}
-
-export default function Note({ id, title, noteDate } : Props){
+export default function Note({ id, title, noteDate } : NoteSummary){
     const [modalOpen, setModalOpen] = useState<boolean> (false);
     const [message, setMessage] = useState<string> ("");
-
-    const nav = useNavigate();
 
     const uid: string | undefined = auth.currentUser?.uid;
 
     const date = noteDate.toDate();
 
+    const nav = useNavigate();
+
+    // 노트 확인 페이지
     const seeMyNote = () => {
         nav(`/${id}`);
     }
 
+    // 노트 수정 페이지
     const goEditPage = (e: React.MouseEvent) => {
         e.stopPropagation();
         nav(`/${id}/edit`);

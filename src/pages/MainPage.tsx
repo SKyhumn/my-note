@@ -1,24 +1,13 @@
-import type { User } from "firebase/auth";
+import type { MainPageProps } from "../types/MainPageProps";
 
 import Header from "../components/sections/Header";
 import Aside from "../components/sections/Aside";
 import MyNotes from "../components/sections/MyNotes";
 
-interface Category{
-    id: string;
-    name: string;
-}
-
-interface Props{
-    user: User | null;
-    category: Category | null;
-    setCategory: (category: Category | null) => void;
-}
-
-
-export default function Main({ user, category, setCategory }: Props){
+export default function Main({ user, category, setCategory } : MainPageProps){
     return(
         <main>
+
             <Header/>
             
             <div className="flex">
@@ -31,6 +20,7 @@ export default function Main({ user, category, setCategory }: Props){
                 <MyNotes category={category}/>
 
             </div>
+
         </main>
     );
 }

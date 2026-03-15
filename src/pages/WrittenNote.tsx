@@ -6,56 +6,55 @@ import { useNavigate, useParams } from "react-router-dom";
 import { auth } from "../SDK/firebase";
 
 import { db } from "../SDK/firebase";
-import { getDoc, deleteDoc, doc, Timestamp } from "firebase/firestore";
+import { getDoc, deleteDoc, doc } from "firebase/firestore";
+
+import type { ANote } from "../types/ANote";
 
 import Header from "../components/sections/Header";
 import SelectionModal from "../components/modals/SelectionModal";
 
-interface Note {
-    title: string;
-    content: string;
-    noteDate: Timestamp;
-    categoryId: string | null;
-}
-
 export default function WrittenNote(){
-    const [note, setNote] = useState<Note | null>(null);
+    const [note, setNote] = useState<ANote | null>(null);
 
     const [modalOpen, setModalOpen] = useState<boolean>(false);
     const [modalMessage, setModalMessage] = useState<string>("");
 
     const { id } = useParams();
 
-    const nav = useNavigate();
-
     const uid: string | undefined = auth.currentUser?.uid;
+
+    const nav = useNavigate();
 
     if (!id) return null;
 
+    // 노트 불러오기
     useEffect(() => {
-        const getNote = async() => {
+        const loadNotes = async() => {
             if (!uid || !id) return;
 
             const noteRef = doc(db, "users", uid, "notes", id);
             const snapshot = await getDoc(noteRef);
 
             if (snapshot.exists()) {
-                setNote(snapshot.data() as Note);
+                setNote(snapshot.data() as ANote);
             }
         };
 
-        getNote();
+        loadNotes();
     }, [id]);
 
+    // 노트 수정 페이지
+    const goEditPage = () => {
+        nav(`/${id}/edit`);
+    }
+
+    // 노트 삭제 선택 창
     const deleteModalOpen = () => {
         setModalOpen(true);
         setModalMessage("노트를 삭제하시겠습니까?");
     }
 
-    const goEditPage = () => {
-        nav(`/${id}/edit`);
-    }
-
+    // 삭제 후 메인 페이지로 이동
     const deleteAndGoMain = async() => {
         if (!uid || !id) return;
          

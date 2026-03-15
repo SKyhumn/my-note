@@ -1,10 +1,6 @@
-interface Props{
-    message: string;
-    yes: () => void;
-    no: () => void;
-}
+import type { SelectionModalProps } from "../../types/SelectionModalProps";
 
-export default function SelectionModal({ message, yes, no } : Props){
+export default function SelectionModal({ message, yes, no } : SelectionModalProps){
     return(
         <div className="
             flex justify-center items-center 

@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { auth } from "./SDK/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 
+import type { Category } from "./types/Category";
 import type { User } from "firebase/auth";
 
 import MainPage from "./pages/MainPage";
@@ -13,24 +14,20 @@ import WrittenNote from "./pages/WrittenNote";
 import Edit from "./pages/EditNote";
 import AuthModal from "./components/modals/AuthModal";
 
-interface Category{
-    id: string;
-    name: string;
-}
-
 function App() {
   const [user, setUser] = useState<User|null> (null);
   const [loading, setLoading] = useState<boolean> (true);
 
   const [category, setCategory] = useState<Category | null>(null);
 
+  // 유저 여부
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const userOk = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
     })
 
-    return () => unsubscribe();
+    return () => userOk();
   },[]);
 
   if (loading) return null;

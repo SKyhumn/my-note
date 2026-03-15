@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { auth, db } from "../../SDK/firebase";
 import { collection, addDoc, query, orderBy, onSnapshot, doc, deleteDoc, updateDoc, where, getDocs } from "firebase/firestore";
 
-import type { User } from "firebase/auth";
+import type { Category } from "../../types/Category";
+import type { AsideProps } from "../../types/AsideProps";
 
 import InputModal from "../modals/InputModal";
 import SelectionModal from "../modals/SelectionModal";
@@ -13,33 +14,22 @@ import plus from "../../assets/plus.png";
 import modify from "../../assets/modify.png";
 import del from "../../assets/del.png";
 
-interface Category{
-    id: string;
-    name: string;
-}
-
-interface Props {
-  user: User | null;
-  setCategory: (category: Category | null) => void;
-}
-
-export default function Aside({ user, setCategory }: Props) {
+export default function Aside({ user, setCategory }: AsideProps) {
     const [categoryName, setCategoryName] = useState<string>("");
     const [categories, setCategories] = useState<Category[]>([]);
 
     const [inputModalOpen, setInputModalOpen] = useState<boolean>(false);
     const [selectionModalOpen, setSelectionModalOpen] = useState<boolean>(false);
-
     const [modalMessage, setModalMessage] = useState<string>("");
 
-    const [deleteCategoryId, setDeleteCategoryId] = useState<string | null>(null);
     const [editCategoryId, setEditCategoryId] = useState<string | null>(null);
+    const [deleteCategoryId, setDeleteCategoryId] = useState<string | null>(null);
 
     const [loading, setLoading] = useState<boolean>(false);
 
-    const nav = useNavigate();
-
     const uid: string | undefined = auth.currentUser?.uid;
+    
+    const nav = useNavigate();
 
     // 카테고리 불러오기
     useEffect(() => {
@@ -50,7 +40,7 @@ export default function Aside({ user, setCategory }: Props) {
             orderBy("createdAt", "asc")
         );
 
-        const unsubscribe = onSnapshot(q, (snapshot) => {
+        const loadCategories = onSnapshot(q, (snapshot) => {
             const categoryArray: Category[] = [];
 
             snapshot.forEach((doc) => {
@@ -63,7 +53,7 @@ export default function Aside({ user, setCategory }: Props) {
             setCategories(categoryArray);
         });
 
-    return () => unsubscribe();
+    return () => loadCategories();
     }, [uid]);
 
     // 쓰기 페이지로
@@ -147,7 +137,7 @@ export default function Aside({ user, setCategory }: Props) {
         setDeleteCategoryId(null);
     };
 
-    // 압력창 닫기
+    // 입력창 닫기
     const closeInputModal = () => {
         setInputModalOpen(false);
         setEditCategoryId(null);
