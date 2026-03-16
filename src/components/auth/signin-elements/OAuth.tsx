@@ -20,7 +20,7 @@ export default function OAuth({ setLoading, setErr } : OAuthProps){
 
             await createUserIfNotExist(res.user);
 
-            alert("로그인에 성공했습니다.");
+            alert("로그인에 성공했습니다.\n동일한 이메일이 있을 경우 SNS 로그인 시 계정이 통합되어 SNS 로그인만 가능합니다.");
         } catch(error:any){
             setErr(error);
         } finally{
