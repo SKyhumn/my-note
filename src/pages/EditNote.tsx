@@ -5,7 +5,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { auth } from "../SDK/firebase";
 
 import { db } from "../SDK/firebase";
-import { getDoc, updateDoc, doc, Timestamp } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+
+import type { Timestamp } from "firebase/firestore";
 
 import Header from "../components/sections/Header";
 import Modal from "../components/modals/Modal";
@@ -44,6 +46,11 @@ export default function Edit({ category } : Props){
     const nav = useNavigate();
 
     if (!id) return null;
+
+    // 메인 페이지
+    const goMain = () => {
+        nav('/');
+    }
 
     // 노트 불러오기
     useEffect(() => {
@@ -88,11 +95,6 @@ export default function Edit({ category } : Props){
     const closeAndGoMain = () => {
         setModalOpen(false);
         goMain();
-    }
-
-    // 메인 페이지
-    const goMain = () => {
-        nav('/');
     }
 
     return(

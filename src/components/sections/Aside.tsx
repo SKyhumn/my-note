@@ -2,11 +2,12 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { auth, db } from "../../SDK/firebase";
-import { collection, addDoc, query, orderBy, onSnapshot, doc, deleteDoc, updateDoc, where, getDocs } from "firebase/firestore";
+import { collection, doc, addDoc, getDocs, updateDoc, deleteDoc, query, orderBy, where, onSnapshot } from "firebase/firestore";
 
 import type { Category } from "../../types/Category";
 import type { AsideProps } from "../../types/AsideProps";
 
+import Modal from "../modals/Modal";
 import InputModal from "../modals/InputModal";
 import SelectionModal from "../modals/SelectionModal";
 
@@ -18,8 +19,9 @@ export default function Aside({ user, setCategory }: AsideProps) {
     const [categoryName, setCategoryName] = useState<string>("");
     const [categories, setCategories] = useState<Category[]>([]);
 
-    const [inputModalOpen, setInputModalOpen] = useState<boolean>(false);
-    const [selectionModalOpen, setSelectionModalOpen] = useState<boolean>(false);
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [isInputModalOpen, setIsInputModalOpen] = useState<boolean>(false);
+    const [isSelectionModalOpen, setIsSelectionModalOpen] = useState<boolean>(false);
     const [modalMessage, setModalMessage] = useState<string>("");
 
     const [editCategoryId, setEditCategoryId] = useState<string | null>(null);
@@ -62,18 +64,23 @@ export default function Aside({ user, setCategory }: AsideProps) {
     };
 
     // 카테고리 추가
-    const addCategory = async () => {
+    const addCategory = async() => {
         if (!uid) return;
 
-        setLoading(true);
+        try {
+            setLoading(true);
 
-        await addDoc(collection(db, "users", uid, "categories"), {
-            name: categoryName,
-            createdAt: new Date(),
-        });
+            const categoryRef = collection(db, "users", uid, "categories");
+            await addDoc(categoryRef, {
+                name: categoryName,
+                createdAt: new Date(),
+            });
+        } catch {
+            setIsModalOpen(true);
+        }
 
         setLoading(false);
-        setInputModalOpen(false);
+        setIsInputModalOpen(false);
         setCategoryName("");
     };
 
@@ -81,21 +88,27 @@ export default function Aside({ user, setCategory }: AsideProps) {
     const openEditModal = (id: string, name: string) => {
         setEditCategoryId(id);
         setCategoryName(name);
-        setInputModalOpen(true);
+        setIsInputModalOpen(true);
     };
 
     // 카테고리 수정
-    const updateCategory = async () => {
+    const updateCategory = async() => {
         if (!uid || !editCategoryId) return;
 
-        setLoading(true);
+        try {
+            setLoading(true);
 
-        await updateDoc(doc(db, "users", uid, "categories", editCategoryId), {
-            name: categoryName,
-        });
-
+            const categoryRef = doc(db, "users", uid, "categories", editCategoryId)
+            await updateDoc(categoryRef, {
+                name: categoryName,
+            });
+        } catch {
+            setIsModalOpen(true);
+            setModalMessage("수정에 실패했습니다.");
+        }
+        
         setLoading(false);
-        setInputModalOpen(false);
+        setIsInputModalOpen(false);
         setEditCategoryId(null);
         setCategoryName("");
     };
@@ -104,42 +117,53 @@ export default function Aside({ user, setCategory }: AsideProps) {
     const openDeleteModal = (id: string, name: string) => {
         setDeleteCategoryId(id);
         setModalMessage(`"${name}" 카테고리를 삭제하시겠습니까?`);
-        setSelectionModalOpen(true);
+        setIsSelectionModalOpen(true);
     };
 
     // 카테고리 삭제
-    const deleteCategoryAndClose = async () => {
+    const deleteCategoryAndClose = async() => {
         if (!uid || !deleteCategoryId) return;
 
         // 카테고리에 포함하는 문서도 삭제
-        const q = query(
-            collection(db, "users", uid, "notes"),
-            where("categoryId", "==", deleteCategoryId)
-        )
+        try {
+            // 카테고리에 포함하는 노트 찾기
+            const q = query(
+                collection(db, "users", uid, "notes"),
+                where("categoryId", "==", deleteCategoryId)
+            );
 
-        const snapshot = await getDocs(q);
+            const snapshot = await getDocs(q);
 
-        const deletePromises = snapshot.docs.map((note) => {
-            deleteDoc(doc(db, "users", uid, "notes", note.id))
-        });
+            // 노트들 삭제
+            const deletePromises = snapshot.docs.map((note) =>
+                deleteDoc(doc(db, "users", uid, "notes", note.id))
+            );
 
-        await Promise.all(deletePromises);
+            await Promise.all(deletePromises);
 
-        await deleteDoc(doc(db, "users", uid, "categories", deleteCategoryId));
+            // 카테고리 삭제
+            await deleteDoc(doc(db, "users", uid, "categories", deleteCategoryId));
 
-        setSelectionModalOpen(false);
-        setDeleteCategoryId(null);
+            setIsSelectionModalOpen(false);
+            setDeleteCategoryId(null);
+
+        } catch {
+            setIsSelectionModalOpen(false);
+
+            setModalMessage("카테고리 삭제에 실패했습니다.");
+            setIsModalOpen(true);
+        }
     };
 
     // 선택창 닫기
     const closeSelectionModal = () => {
-        setSelectionModalOpen(false);
+        setIsSelectionModalOpen(false);
         setDeleteCategoryId(null);
     };
 
     // 입력창 닫기
     const closeInputModal = () => {
-        setInputModalOpen(false);
+        setIsInputModalOpen(false);
         setEditCategoryId(null);
         setCategoryName("");
     };
@@ -159,12 +183,14 @@ export default function Aside({ user, setCategory }: AsideProps) {
                 w-64 h-12 mt-6 ml-3 
                 text-xl"
             >
+
                 <img src={plus} className="w-4 h-4 mr-3"/>
                 노트 작성
+
             </button>
 
             <button
-            onClick={() => setInputModalOpen(true)}
+            onClick={() => setIsInputModalOpen(true)}
             className="
                 black-btn 
                 flex justify-center items-center 
@@ -183,6 +209,7 @@ export default function Aside({ user, setCategory }: AsideProps) {
             </p>
 
             <ul className="overflow-y-auto w-64 h-80 ml-3">
+
                 <li onClick={() => setCategory(null)} className="mt-4 font-medium cursor-pointer">전체 노트</li>
 
                 {categories.map((category) => (
@@ -192,7 +219,8 @@ export default function Aside({ user, setCategory }: AsideProps) {
                     className="
                         flex justify-between items-center 
                         mt-4 
-                        font-medium"
+                        font-medium
+                        cursor-pointer"
                     >
                         <p className="truncate w-20">
                             {category.name}
@@ -216,9 +244,17 @@ export default function Aside({ user, setCategory }: AsideProps) {
 
                     </li>
                 ))}
+
             </ul>
 
-            {inputModalOpen && (
+            {isModalOpen && (
+                <Modal
+                message={modalMessage}
+                onClose={() => setIsModalOpen(false)}
+                />
+            )}
+
+            {isInputModalOpen && (
                 <InputModal
                 message={editCategoryId ? "카테고리 수정" : "카테고리 추가"}
                 categoryName={categoryName}
@@ -229,7 +265,7 @@ export default function Aside({ user, setCategory }: AsideProps) {
                 />
             )}
 
-            {selectionModalOpen && (
+            {isSelectionModalOpen && (
                 <SelectionModal
                 message={modalMessage}
                 yes={deleteCategoryAndClose}

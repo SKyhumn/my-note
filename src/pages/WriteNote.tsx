@@ -36,20 +36,27 @@ export default function WriteNote({ category } : CategoryPresence){
     const saveNote = async() => {
         if (!uid || title.trim().length === 0) return;
 
-        setLoading(true);
+        try {
+            setLoading(true);
 
-        setModalOpen(false);
-        setModalMessage("");
+            setModalOpen(false);
+            setModalMessage("");
 
-        await addDoc(collection(db, "users", uid, "notes"), {
-            title:title,
-            content:content,
-            noteDate:new Date(),
-            categoryId:category?.id ?? null
-        });
+            const noteRef = collection(db, "users", uid, "notes")
+            await addDoc(noteRef, {
+                title:title,
+                content:content,
+                noteDate:new Date(),
+                categoryId:category?.id ?? null
+            });
 
-        setModalOpen(true);
-        setModalMessage("저장 되었습니다!");
+            setModalOpen(true);
+            setModalMessage("저장 되었습니다!");
+        } catch {
+            setModalOpen(true);
+            setModalMessage("저장에 실패했습니다.");
+        }
+        
     }
 
     // 창 닫고 메인 페이지로

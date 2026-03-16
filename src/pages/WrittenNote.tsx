@@ -6,7 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { auth } from "../SDK/firebase";
 
 import { db } from "../SDK/firebase";
-import { getDoc, deleteDoc, doc } from "firebase/firestore";
+import { doc, getDoc, deleteDoc } from "firebase/firestore";
 
 import type { ANote } from "../types/ANote";
 
@@ -67,68 +67,91 @@ export default function WrittenNote(){
         <div>
 
             <Header/> 
-
-            {!note ? (
-                <p>Loading...</p>
-            ) : (
-                <div 
-                className="
-                    flex flex-col justify-center 
-                    w-200 h-auto 
-                    mx-auto"
-                >
-
-                    <div className="
-                        w-full h-120 
-                        mt-5 p-5 
-                        rounded-2xl 
-                        bg-white"
-                    >
-
-                        <p className="text-3xl font-bold">
-                            {note.title}
-                        </p>
-
-                        <p className="mt-2 text-gray-400">
-                            {note.noteDate.toDate().toLocaleDateString()}
-                        </p>
-                        
+            
+            <div 
+            className="
+                flex flex-col justify-center 
+                w-200 h-auto 
+                mx-auto"
+            >
+                {note ? (
+                    <>
                         <div className="
-                            w-full h-85 
-                            mt-5 
-                            overflow-y-scroll 
-                            whitespace-pre-wrap"
+                            w-full h-120 
+                            mt-5 p-5 
+                            rounded-2xl 
+                            bg-white"
                         >
-                            {note.content}
+
+                            <p className="text-3xl font-bold">
+                                {note.title}
+                            </p>
+
+                            <p className="mt-2 text-gray-400">
+                                {note.noteDate.toDate().toLocaleDateString()}
+                            </p>
+                                
+                            <div className="
+                                w-full h-85 
+                                mt-5 
+                                overflow-y-scroll 
+                                whitespace-pre-wrap"
+                            >
+                                {note.content}
+                            </div>
+
                         </div>
 
-                    </div>
+                        <div className="flex justify-end mt-10">
 
-                    <div className="flex justify-end mt-10">
+                            <button 
+                            onClick={goEditPage}
+                            className="
+                                black-btn 
+                                w-20 p-2 mr-5 
+                                text-xl font-semibold"
+                            >
+                                수정
+                            </button>
 
-                        <button 
-                        onClick={goEditPage}
-                        className="
-                            black-btn 
-                            w-20 p-2 mr-5 
-                            text-xl font-semibold"
+                            <button 
+                            onClick={deleteModalOpen}
+                            className="
+                                red-btn 
+                                w-20 p-2 
+                                text-xl font-semibold"
+                            >
+                                삭제
+                            </button>
+                        </div>
+                    </>) : (
+                    <>
+                        <div className="
+                            w-full h-120 
+                            mt-5 p-5 
+                            rounded-2xl 
+                            bg-white"
                         >
-                            수정
-                        </button>
 
-                        <button 
-                        onClick={deleteModalOpen}
-                        className="
-                            red-btn 
-                            w-20 p-2 
-                            text-xl font-semibold"
-                        >
-                            삭제
-                        </button>
-                    </div>
+                            <div className="
+                                w-150 h-7.5
+                                rounded-3xl
+                                bg-gray-200
+                            "/>
 
-                </div>
-            )}
+                            <div className="
+                                w-20 h-4 
+                                mt-4 
+                                rounded-2xl 
+                                bg-gray-200"
+                            />
+
+                        </div>
+                    </>
+                )}
+
+            </div>
+            
 
             {modalOpen && <SelectionModal 
             message={modalMessage} 

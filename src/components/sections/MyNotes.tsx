@@ -8,11 +8,14 @@ import { db } from "../../SDK/firebase";
 import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
 
 import Note from "../Note";
+import NoteLoading  from "../NoteLoading";
 
 export default function MyNotes({ category } : CategoryPresence){
-    const [notes, setNotes] = useState<any[]> ([]);
+    const [notes, setNotes] = useState<any[]>([]);
 
-    const [search, setSearch] = useState<string> ("");
+    const [search, setSearch] = useState<string>("");
+
+    const [loading, setLoading] = useState<boolean>(true);
 
     const uid: string | undefined = auth.currentUser?.uid;
 
@@ -36,6 +39,7 @@ export default function MyNotes({ category } : CategoryPresence){
             });
 
             setNotes(noteArray);
+            setLoading(false);
         })
 
         return () => loadNotes();
@@ -82,15 +86,29 @@ export default function MyNotes({ category } : CategoryPresence){
                 p-10"
             >
 
-                {filteredNotes.map((note) => (
-                    <Note 
-                    key={note.id} 
-                    id={note.id} 
-                    title={note.title} 
-                    noteDate={note.noteDate}
-                    />
-                ))}
-
+                {loading ? (
+                    <>
+                        <NoteLoading/>
+                        <NoteLoading/>
+                        <NoteLoading/>
+                        <NoteLoading/>
+                        <NoteLoading/>
+                        <NoteLoading/>
+                        <NoteLoading/>
+                        <NoteLoading/>
+                        <NoteLoading/>
+                    </>
+                ) : (
+                    filteredNotes.map((note) => (
+                        <Note 
+                        key={note.id} 
+                        id={note.id} 
+                        title={note.title} 
+                        noteDate={note.noteDate}
+                        />
+                    ))
+                )}
+                
             </div>
 
         </div>
