@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 
 import { auth } from "../../SDK/firebase";
 
+import type { ANote } from "../../types/ANote";
 import type { CategoryPresence } from "../../types/CategoryPresence";
 
 import { db } from "../../SDK/firebase";
@@ -11,7 +12,7 @@ import Note from "../Note";
 import NoteLoading  from "../NoteLoading";
 
 export default function MyNotes({ category } : CategoryPresence){
-    const [notes, setNotes] = useState<any[]>([]);
+    const [notes, setNotes] = useState<ANote[]>([]);
 
     const [search, setSearch] = useState<string>("");
 
@@ -29,12 +30,13 @@ export default function MyNotes({ category } : CategoryPresence){
         )
 
         const loadNotes = onSnapshot(q, (snapshot) => {
-            const noteArray: any[] = [];
+            const noteArray: ANote[] = [];
 
             snapshot.forEach((doc) => {
+                const data = doc.data() as Omit<ANote, "id">;
                 noteArray.push({
                     id:doc.id,
-                    ...doc.data()
+                    ...data
                 });
             });
 

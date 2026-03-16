@@ -21,7 +21,8 @@ export default function WriteNote({ category } : CategoryPresence){
     const [modalOpen, setModalOpen] = useState<boolean> (false);
     const [modalMessage, setModalMessage] = useState<string> ("");
 
-    const uid: string | undefined = auth.currentUser?.uid;
+    const user = auth.currentUser;
+    const uid = user?.uid;
 
     const isDisabled = loading || title.trim().length === 0;
 

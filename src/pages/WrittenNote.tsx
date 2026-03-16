@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 
 import { useNavigate, useParams } from "react-router-dom";
@@ -43,6 +42,11 @@ export default function WrittenNote(){
         loadNotes();
     }, [id]);
 
+    // 메인 페이지
+    const goMain = () => {
+        nav('/');
+    }
+
     // 노트 수정 페이지
     const goEditPage = () => {
         nav(`/${id}/edit`);
@@ -57,10 +61,14 @@ export default function WrittenNote(){
     // 삭제 후 메인 페이지로 이동
     const deleteAndGoMain = async() => {
         if (!uid || !id) return;
-         
-        await deleteDoc(doc(db, "users", uid, "notes", id));
-
-        nav('/');
+        
+        try {
+            await deleteDoc(doc(db, "users", uid, "notes", id));
+            nav('/');
+        } catch {
+            setModalMessage("삭제에 실패했습니다.");
+            setModalOpen(true);
+        }
     }
 
     return(
@@ -102,27 +110,44 @@ export default function WrittenNote(){
 
                         </div>
 
-                        <div className="flex justify-end mt-10">
+                        <div className="flex justify-between mt-10">
+                            
+                            <div>
+                                <button 
+                                onClick={goMain}
+                                className="
+                                    gray-btn 
+                                    w-28 p-2 mr-5 
+                                    text-xl font-semibold"
+                                >
+                                    뒤로가기
+                                </button>
+                            </div>
 
-                            <button 
-                            onClick={goEditPage}
-                            className="
-                                black-btn 
-                                w-20 p-2 mr-5 
-                                text-xl font-semibold"
-                            >
-                                수정
-                            </button>
+                            <div>
+                            
+                                <button 
+                                onClick={goEditPage}
+                                className="
+                                    black-btn 
+                                    w-20 p-2 mr-5 
+                                    text-xl font-semibold"
+                                >
+                                    수정
+                                </button>
 
-                            <button 
-                            onClick={deleteModalOpen}
-                            className="
-                                red-btn 
-                                w-20 p-2 
-                                text-xl font-semibold"
-                            >
-                                삭제
-                            </button>
+                                <button 
+                                onClick={deleteModalOpen}
+                                className="
+                                    red-btn 
+                                    w-20 p-2 
+                                    text-xl font-semibold"
+                                >
+                                    삭제
+                                </button>
+
+                            </div>
+
                         </div>
                     </>) : (
                     <>
