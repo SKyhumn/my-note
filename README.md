@@ -5,6 +5,8 @@ React와 Firebase를 활용하여 인증, 실시간 데이터 처리, 상태 관
 
 로그인 후 노트를 작성·수정·삭제하고, 카테고리로 체계적으로 정리할 수 있습니다.
 
+배포 링크: https://my-note-nu.vercel.app/
+
 ## 🛠️ Tech Stack
 
 - FrontEnd
