@@ -6,7 +6,7 @@ import SignIn from "../auth/SignIn";
 import SignUp from "../auth/SignUp";
 
 export default function AuthModal(){
-    const [mode, setMode] = useState<Mode> ("signin");
+    const [mode, setMode] = useState<Mode>("signin");
 
     return(
         <div className="
