@@ -29,9 +29,7 @@ React와 Firebase를 활용하여 인증, 실시간 데이터 처리, 상태 관
 
 - Deploy
 
-    ![Vercel](https://img.shields.io/badge/vercel-%23000000?style=for-the-badge&logo=vercel&logoColor=white)
-
-
+    ![Netlify](https://img.shields.io/badge/netlify-%2300C7B7?style=for-the-badge&logo=netlify&logoColor=white)
 
 ## 💻 Preview
 
