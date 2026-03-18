@@ -13,9 +13,8 @@ React와 Firebase를 활용하여 인증, 실시간 데이터 처리, 상태 관
   
     ![React](https://img.shields.io/badge/react-%2361DAFB?style=for-the-badge&logo=react&logoColor=black)
     ![Tailwind CSS](https://img.shields.io/badge/tailwind-%2306B6D4?style=for-the-badge&logo=tailwind-css&logoColor=white)
-    ![HTML5](https://img.shields.io/badge/html5-%23E34F26?style=for-the-badge&logo=html5&logoColor=white)
-    ![CSS3](https://img.shields.io/badge/css3-%23663399?style=for-the-badge&logo=css&logoColor=white)
     ![TypeScript](https://img.shields.io/badge/typescript-%233178C6?style=for-the-badge&logo=typescript&logoColor=white)
+    ![HTML5](https://img.shields.io/badge/html5-%23E34F26?style=for-the-badge&logo=html5&logoColor=white)
 
 - Server
 
