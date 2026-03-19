@@ -126,7 +126,7 @@ React와 Firebase를 활용하여 인증, 실시간 데이터 처리, 상태 관
 - Firestore의 컬렉션/문서 구조를 직접 설계하며 데이터 모델링 경험
 - onAuthStateChanged로 사용자 인증 상태 기반 처리 경험
 - onSnapshot을 통해 실시간 데이터 동기화 및 상태 관리 흐름 이해
-- Firebase 환경 변수 (.env)분리를 통해 환경과 로컬 환경을 구분 설정 경험
+- Firebase 환경 변수 (.env)분리를 통해 개발 환경과 로컬 환경을 구분 설정 경험
 - Vercel을 활용해 배포 파이프라인 흐름 이해
 
 ## 🚀 Future Improvement
