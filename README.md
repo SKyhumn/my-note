@@ -43,19 +43,6 @@ React와 Firebase를 활용하여 인증, 실시간 데이터 처리, 상태 관
     - 노트 검색
     - 카테고리에 따른 노트 조회
 
-- 로그인 화면
-  
-    ![로그인](./src/assets/screen/로그인.png)
-
-    - 이메일 로그인 및 Google, GitHub OAuth 인증
-
-- 회원가입 화면
-  
-    ![회원가입](./src/assets/screen/회원가입.png)
-
-    - 회원가입 기능 구현
-    - 닉네임, 이메일, 비밀번호 등 사용자 정보 Firestore에 생성
-
 - 노트 확인
 
     ![노트 확인](./src/assets/screen/노트확인.png)
