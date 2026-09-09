@@ -9,7 +9,7 @@ React와 Firebase를 활용하여 인증, 실시간 데이터 처리, 상태 관
 
 ## 기획 배경
 
-서비스를 만드는 과정에서 CRUD(Create/Read/Update/Delete) 기능 구현을 배우고 Firebase와 연동을 통해 백엔드 연결 응용력을 향상시키기 위해 기획했습니다.
+서비스를 만드는 과정에서 CRUD(Create/Read/Update/Delete) 기능 구현을 배우고 Firebase와 연동을 통해 백엔드 연결하는 경험을 쌓기 위해 기획했습니다.
 
 ## 🛠️ Tech Stack
 
