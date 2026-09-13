@@ -85,14 +85,15 @@ export default function SignUp({ onSwitch } : Switch){
     return(
         <div className="animate-modal-on">
 
-            <p className="font-extrabold text-4xl text-center">
+            <p className="font-extrabold text-2xl sm:text-3xl md:text-4xl text-center px-2">
                 회원가입
             </p>
 
             <div className="
                 flex flex-col items-center 
-                w-120 h-105
-                mt-5"
+                w-full px-4 sm:px-0 sm:w-90
+                mt-5
+                mx-auto"
             >
 
                 <input 
@@ -101,7 +102,7 @@ export default function SignUp({ onSwitch } : Switch){
                 disabled={loading} 
                 value={name} 
                 onChange={(e) => setName(e.target.value)} 
-                className="input"
+                className="input w-full"
                 />
 
                 {nameValid == false && (
@@ -116,7 +117,7 @@ export default function SignUp({ onSwitch } : Switch){
                 disabled={loading} 
                 value={email} 
                 onChange={(e) => setEmail(e.target.value)} 
-                className="input"
+                className="input w-full"
                 />
 
                 {emailValid == false && (
@@ -131,7 +132,7 @@ export default function SignUp({ onSwitch } : Switch){
                 disabled={loading} 
                 value={password} 
                 onChange={(e) => setPassword(e.target.value)} 
-                className="input"
+                className="input w-full"
                 />
 
                 {passwordValid == false && (
@@ -146,7 +147,7 @@ export default function SignUp({ onSwitch } : Switch){
                 disabled={loading} 
                 value={passwordAgain} 
                 onChange={(e) => setPasswordAgain(e.target.value)} 
-                className="input"
+                className="input w-full"
                 />
 
                 {passwordIsCorrect == false && (
@@ -159,7 +160,7 @@ export default function SignUp({ onSwitch } : Switch){
                 onClick={checkInfo} 
                 disabled={loading} 
                 className={`
-                    w-90 h-10 mt-5
+                    w-full h-10 mt-5
                     ${!loading ? "black-btn" : "gray-btn"}`
                 }>
                     회원가입

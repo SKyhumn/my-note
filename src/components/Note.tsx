@@ -9,6 +9,7 @@ import { deleteDoc, doc } from "firebase/firestore";
 
 import type { NoteSummary } from "../types/NoteSummary";
 
+import Modal from "./modals/Modal";
 import SelectionModal from "./modals/SelectionModal";
 
 import modify from "../assets/modify.png"
@@ -16,12 +17,13 @@ import del from "../assets/del.png";
 
 
 export default function Note({ id, title, noteDate } : NoteSummary){
-    const [modalOpen, setModalOpen] = useState<boolean> (false);
-    const [message, setMessage] = useState<string> ("");
+    const [modalOpen, setModalOpen] = useState<boolean>(false);
+    const [selectionModalOpen, setSelectionModalOpen] = useState<boolean>(false);
+    const [modalMessage, setModalMessage] = useState<string>("");
 
     const uid: string | undefined = auth.currentUser?.uid;
 
-    const date = noteDate.toDate();
+    const date = noteDate?.toDate?.();
 
     const nav = useNavigate();
 
@@ -31,56 +33,61 @@ export default function Note({ id, title, noteDate } : NoteSummary){
     }
 
     // 노트 수정 페이지
-    const goEditPage = (e: React.MouseEvent) => {
+    const goEditPage = (e: React.MouseEvent<HTMLImageElement>) => {
         e.stopPropagation();
         nav(`/${id}/edit`);
     }
 
     // 삭제여부창 활성화
-    const deleteNote = (e: React.MouseEvent) => {
+    const deleteNote = (e: React.MouseEvent<HTMLImageElement>) => {
         e.stopPropagation();
-        setModalOpen(true);
-        setMessage("노트를 삭제하시겠습니까?");
+        setSelectionModalOpen(true);
+        setModalMessage("노트를 삭제하시겠습니까?");
     }
 
     // 창 닫고 삭제
     const closeAndDelete = async()=> {
         if (!uid) return;
 
-        await deleteDoc(
-            doc(db, "users", uid, "notes", id)
-        );
+        try {
+            const noteRef = doc(db, "users", uid, "notes", id);
+            await deleteDoc(noteRef);
 
-        setModalOpen(false);
+            setSelectionModalOpen(false);
+        } catch {
+            setSelectionModalOpen(false);
+            
+            setModalOpen(true);
+            setModalMessage("삭제에 실패했습니다.");
+        }
     }
 
     return(
         <div
         onClick={seeMyNote}
         className="
-            w-88 h-40 
+            flex flex-col justify-between
+            w-full h-40 
+            p-6
             rounded-xl 
             bg-white 
             cursor-pointer"
         >
 
-            <p className="
-                truncate w-72 
-                ml-6 mt-6 
-                text-4xl font-semibold"
-            >
-                {title}
-            </p>
+            <div>
+                <p className="
+                    truncate
+                    text-2xl sm:text-3xl md:text-4xl font-semibold"
+                >
+                    {title}
+                </p>
 
-            <p className="ml-6 mt-2 text-gray-400">
-                {date.toLocaleDateString()}
-            </p>
-            
-            <div className="
-                flex justify-between 
-                relative top-7 left-65 
-                w-15"
-            >
+                <p className="mt-2 text-gray-400">
+                    {date?.toLocaleDateString()}
+                </p>
+            </div>
+
+            <div className="flex justify-end gap-3">
 
                 <img 
                 src={modify} 
@@ -96,11 +103,17 @@ export default function Note({ id, title, noteDate } : NoteSummary){
 
             </div>
 
-            {modalOpen &&
+            {selectionModalOpen &&
             <SelectionModal 
-            message={message} 
+            message={modalMessage} 
             yes={closeAndDelete} 
-            no={() => setModalOpen(false)}
+            no={() => setSelectionModalOpen(false)}
+            />}
+
+            {modalOpen && 
+            <Modal
+            message={modalMessage}
+            onClose={() => setModalOpen(false)}
             />}
 
         </div>

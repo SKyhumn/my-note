@@ -2,17 +2,25 @@ import { useState, useEffect } from "react";
 
 import { auth } from "../../SDK/firebase";
 
-import type { CategoryPresence } from "../../types/CategoryPresence";
+import type { ANote } from "../../types/ANote";
+import type { Category } from "../../types/Category";
 
 import { db } from "../../SDK/firebase";
 import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
 
 import Note from "../Note";
+import NoteLoading from "../NoteLoading";
 
-export default function MyNotes({ category } : CategoryPresence){
-    const [notes, setNotes] = useState<any[]> ([]);
+interface Props {
+    category: Category | null;
+}
 
-    const [search, setSearch] = useState<string> ("");
+export default function MyNotes({ category }: Props){
+    const [notes, setNotes] = useState<ANote[]>([]);
+
+    const [search, setSearch] = useState<string>("");
+
+    const [loading, setLoading] = useState<boolean>(true);
 
     const uid: string | undefined = auth.currentUser?.uid;
 
@@ -26,16 +34,18 @@ export default function MyNotes({ category } : CategoryPresence){
         )
 
         const loadNotes = onSnapshot(q, (snapshot) => {
-            const noteArray: any[] = [];
+            const noteArray: ANote[] = [];
 
             snapshot.forEach((doc) => {
+                const data = doc.data() as Omit<ANote, "id">;
                 noteArray.push({
                     id:doc.id,
-                    ...doc.data()
+                    ...data
                 });
             });
 
             setNotes(noteArray);
+            setLoading(false);
         })
 
         return () => loadNotes();
@@ -53,11 +63,11 @@ export default function MyNotes({ category } : CategoryPresence){
     });
 
     return(
-        <div className="w-[calc(100vw-17.5rem)] h-[calc(100vh-5rem)]">
+        <div className="flex-1 w-full md:w-auto h-[calc(100vh-4rem)] md:h-[calc(100vh-5rem)]">
 
-            <div className="flex items-center">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center px-4 md:px-0">
 
-                <p className="ml-10 mt-10 text-2xl font-semibold">
+                <p className="md:ml-10 mt-6 md:mt-10 text-xl md:text-2xl font-semibold">
                     {category ? category.name : "전체 노트"} ({filteredNotes.length})
                 </p>
 
@@ -67,30 +77,44 @@ export default function MyNotes({ category } : CategoryPresence){
                 value={search} 
                 onChange={(e) => setSearch(e.target.value)} 
                 className="
-                    w-80 h-10 
-                    mt-10 ml-20 pl-4 
+                    w-full sm:w-80 h-10 
+                    mt-3 sm:mt-10 sm:ml-20 pl-4 
                     border-2 border-black rounded-3xl 
                     bg-white"
                 />
 
             </div>
 
-            <div className="
-                grid grid-cols-3 gap-12 
-                overflow-y-auto 
-                w-full h-[87%] 
-                p-10"
-            >
+            <div className="overflow-y-auto w-full h-[80%] md:h-[87%]">
+                <div className="
+                    grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-12 
+                    p-4 md:p-10"
+                >
 
-                {filteredNotes.map((note) => (
-                    <Note 
-                    key={note.id} 
-                    id={note.id} 
-                    title={note.title} 
-                    noteDate={note.noteDate}
-                    />
-                ))}
-
+                    {loading ? (
+                        <>
+                            <NoteLoading/>
+                            <NoteLoading/>
+                            <NoteLoading/>
+                            <NoteLoading/>
+                            <NoteLoading/>
+                            <NoteLoading/>
+                            <NoteLoading/>
+                            <NoteLoading/>
+                            <NoteLoading/>
+                        </>
+                    ) : (
+                        filteredNotes.map((note) => (
+                            <Note 
+                            key={note.id} 
+                            id={note.id} 
+                            title={note.title} 
+                            noteDate={note.noteDate}
+                            />
+                        ))
+                    )}
+                    
+                </div>
             </div>
 
         </div>

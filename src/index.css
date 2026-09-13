@@ -5,6 +5,11 @@
     --animate-modal-on:modal-on 0.3s ease-out 0s;
 }
 
+html, body {
+    margin: 0;
+    overflow-x: hidden;
+}
+
 @keyframes modal-on{
     0%{
         opacity:0;
@@ -17,7 +22,7 @@
 }
 
 .input{
-    @apply block w-90 h-10 pl-4 mt-5 border border-gray-400 rounded-3xl
+    @apply block w-full h-10 pl-4 mt-5 border border-gray-400 rounded-3xl
 }
 
 .oauth{
@@ -39,4 +44,3 @@
 .red-btn{
     @apply rounded-3xl bg-red-700 text-white font-semibold cursor-pointer;
 }
-

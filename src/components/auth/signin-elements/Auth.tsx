@@ -36,14 +36,15 @@ export default function Auth({ onSwitch } : Switch){
     return(
         <div>
 
-            <p className="font-extrabold text-4xl text-center">
+            <p className="font-extrabold text-2xl sm:text-3xl md:text-4xl text-center px-2">
                 로그인이 필요합니다.
             </p>
 
             <div className="
                 flex flex-col items-center 
-                w-120 h-65 
-                mt-5"
+                w-full px-4 sm:px-0 sm:w-90
+                mt-5
+                mx-auto"
             >
 
                 <input 
@@ -52,7 +53,7 @@ export default function Auth({ onSwitch } : Switch){
                 disabled={loading} 
                 value={email} 
                 onChange={(e) => setEmail(e.target.value)} 
-                className="input"
+                className="input w-full"
                 />
 
                 <input 
@@ -61,7 +62,7 @@ export default function Auth({ onSwitch } : Switch){
                 disabled={loading} 
                 value={password} 
                 onChange={(e) => setPassword(e.target.value)} 
-                className="input"
+                className="input w-full"
                 />
 
                 {err!=null&&(
@@ -74,7 +75,7 @@ export default function Auth({ onSwitch } : Switch){
                 onClick={handleSignIn} 
                 disabled={loading} 
                 className={`
-                    w-90 h-10 
+                    w-full h-10 
                     mt-5 
                     ${!loading?"black-btn":"gray-btn"}`}
                 >
@@ -84,7 +85,7 @@ export default function Auth({ onSwitch } : Switch){
                 <button 
                 onClick={onSwitch} 
                 disabled={loading} 
-                className="gray-btn w-90 h-10 mt-5"
+                className="gray-btn w-full h-10 mt-5"
                 >
                     회원가입
                 </button>

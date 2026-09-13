@@ -1,10 +1,17 @@
-import type { SelectionModalProps } from "../../types/SelectionModalProps";
+import { createPortal } from "react-dom";
 
-export default function SelectionModal({ message, yes, no } : SelectionModalProps){
-    return(
+interface Props {
+    message: string;
+    yes: () => void;
+    no: () => void;
+}
+
+export default function SelectionModal({ message, yes, no } : Props){
+    return createPortal(
         <div className="
             flex justify-center items-center 
-            fixed inset-0 z-10 
+            fixed inset-0 z-100 
+            px-4
             bg-black/50"
         >
 
@@ -12,25 +19,25 @@ export default function SelectionModal({ message, yes, no } : SelectionModalProp
             onClick={(e) => e.stopPropagation()}
             className="
                 flex flex-col justify-center items-center 
-                w-auto h-60 
-                px-10 
+                w-full max-w-100 h-auto 
+                px-6 sm:px-10 py-8
                 rounded-2xl 
                 bg-white 
                 animate-modal-on"
             >
 
-                <p className="text-3xl font-semibold text-center">
+                <p className="text-xl sm:text-2xl md:text-3xl font-semibold text-center break-keep">
                     {message}
                 </p>
 
-                <div className="flex justify-between translate-y-10 w-50">
+                <div className="flex justify-between gap-4 mt-8 sm:mt-10 w-full max-w-50">
 
                     <button 
                     onClick={yes} 
                     className="
                         black-btn 
-                        w-20 p-2 
-                        text-xl font-semibold 
+                        flex-1 p-2 
+                        text-lg md:text-xl font-semibold 
                         cursor-pointer"
                     >
                         예
@@ -40,8 +47,8 @@ export default function SelectionModal({ message, yes, no } : SelectionModalProp
                     onClick={no} 
                     className="
                         black-btn 
-                        w-20 p-2 
-                        text-xl font-semibold 
+                        flex-1 p-2 
+                        text-lg md:text-xl font-semibold 
                         cursor-pointer"
                     >
                         아니오
@@ -51,6 +58,7 @@ export default function SelectionModal({ message, yes, no } : SelectionModalProp
 
             </div>
             
-        </div>
+        </div>,
+        document.body
     );
 }

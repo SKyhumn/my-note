@@ -2,11 +2,12 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { auth, db } from "../../SDK/firebase";
-import { collection, addDoc, query, orderBy, onSnapshot, doc, deleteDoc, updateDoc, where, getDocs } from "firebase/firestore";
+import { collection, doc, addDoc, getDocs, updateDoc, deleteDoc, query, orderBy, where, onSnapshot } from "firebase/firestore";
 
 import type { Category } from "../../types/Category";
-import type { AsideProps } from "../../types/AsideProps";
+import type { User } from "firebase/auth";
 
+import Modal from "../modals/Modal";
 import InputModal from "../modals/InputModal";
 import SelectionModal from "../modals/SelectionModal";
 
@@ -14,16 +15,27 @@ import plus from "../../assets/plus.png";
 import modify from "../../assets/modify.png";
 import del from "../../assets/del.png";
 
-export default function Aside({ user, setCategory }: AsideProps) {
+
+interface Props {
+    user: User | null;
+    setCategory: (category: Category | null) => void;
+    isOpen: boolean;
+    onClose: () => void;
+}
+
+export default function Aside({ user, setCategory, isOpen, onClose }: Props) {
     const [categoryName, setCategoryName] = useState<string>("");
     const [categories, setCategories] = useState<Category[]>([]);
 
-    const [inputModalOpen, setInputModalOpen] = useState<boolean>(false);
-    const [selectionModalOpen, setSelectionModalOpen] = useState<boolean>(false);
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [isInputModalOpen, setIsInputModalOpen] = useState<boolean>(false);
+    const [isSelectionModalOpen, setIsSelectionModalOpen] = useState<boolean>(false);
     const [modalMessage, setModalMessage] = useState<string>("");
 
     const [editCategoryId, setEditCategoryId] = useState<string | null>(null);
     const [deleteCategoryId, setDeleteCategoryId] = useState<string | null>(null);
+
+    const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
 
     const [loading, setLoading] = useState<boolean>(false);
 
@@ -62,18 +74,23 @@ export default function Aside({ user, setCategory }: AsideProps) {
     };
 
     // 카테고리 추가
-    const addCategory = async () => {
+    const addCategory = async() => {
         if (!uid) return;
 
-        setLoading(true);
+        try {
+            setLoading(true);
 
-        await addDoc(collection(db, "users", uid, "categories"), {
-            name: categoryName,
-            createdAt: new Date(),
-        });
+            const categoryRef = collection(db, "users", uid, "categories");
+            await addDoc(categoryRef, {
+                name: categoryName,
+                createdAt: new Date(),
+            });
+        } catch {
+            setIsModalOpen(true);
+        }
 
         setLoading(false);
-        setInputModalOpen(false);
+        setIsInputModalOpen(false);
         setCategoryName("");
     };
 
@@ -81,21 +98,27 @@ export default function Aside({ user, setCategory }: AsideProps) {
     const openEditModal = (id: string, name: string) => {
         setEditCategoryId(id);
         setCategoryName(name);
-        setInputModalOpen(true);
+        setIsInputModalOpen(true);
     };
 
     // 카테고리 수정
-    const updateCategory = async () => {
+    const updateCategory = async() => {
         if (!uid || !editCategoryId) return;
 
-        setLoading(true);
+        try {
+            setLoading(true);
 
-        await updateDoc(doc(db, "users", uid, "categories", editCategoryId), {
-            name: categoryName,
-        });
-
+            const categoryRef = doc(db, "users", uid, "categories", editCategoryId)
+            await updateDoc(categoryRef, {
+                name: categoryName,
+            });
+        } catch {
+            setIsModalOpen(true);
+            setModalMessage("수정에 실패했습니다.");
+        }
+        
         setLoading(false);
-        setInputModalOpen(false);
+        setIsInputModalOpen(false);
         setEditCategoryId(null);
         setCategoryName("");
     };
@@ -104,138 +127,219 @@ export default function Aside({ user, setCategory }: AsideProps) {
     const openDeleteModal = (id: string, name: string) => {
         setDeleteCategoryId(id);
         setModalMessage(`"${name}" 카테고리를 삭제하시겠습니까?`);
-        setSelectionModalOpen(true);
+        setIsSelectionModalOpen(true);
     };
 
     // 카테고리 삭제
-    const deleteCategoryAndClose = async () => {
+    const deleteCategoryAndClose = async() => {
         if (!uid || !deleteCategoryId) return;
 
-        // 카테고리에 포함하는 문서도 삭제
-        const q = query(
-            collection(db, "users", uid, "notes"),
-            where("categoryId", "==", deleteCategoryId)
-        )
+        try {
+            const q = query(
+                collection(db, "users", uid, "notes"),
+                where("categoryId", "==", deleteCategoryId)
+            );
 
-        const snapshot = await getDocs(q);
+            const snapshot = await getDocs(q);
 
-        const deletePromises = snapshot.docs.map((note) => {
-            deleteDoc(doc(db, "users", uid, "notes", note.id))
-        });
+            const deletePromises = snapshot.docs.map((note) =>
+                deleteDoc(doc(db, "users", uid, "notes", note.id))
+            );
 
-        await Promise.all(deletePromises);
+            await Promise.all(deletePromises);
 
-        await deleteDoc(doc(db, "users", uid, "categories", deleteCategoryId));
+            await deleteDoc(doc(db, "users", uid, "categories", deleteCategoryId));
 
-        setSelectionModalOpen(false);
-        setDeleteCategoryId(null);
+            setIsSelectionModalOpen(false);
+            setDeleteCategoryId(null);
+
+        } catch {
+            setIsSelectionModalOpen(false);
+
+            setModalMessage("카테고리 삭제에 실패했습니다.");
+            setIsModalOpen(true);
+        }
     };
 
     // 선택창 닫기
     const closeSelectionModal = () => {
-        setSelectionModalOpen(false);
+        setIsSelectionModalOpen(false);
         setDeleteCategoryId(null);
     };
 
     // 입력창 닫기
     const closeInputModal = () => {
-        setInputModalOpen(false);
+        setIsInputModalOpen(false);
         setEditCategoryId(null);
         setCategoryName("");
     };
 
+    // 카테고리 선택 (모바일에서는 선택 후 드로어 닫기)
+    const handleSelectCategory = (category: Category | null) => {
+        setCategory(category);
+        setSelectedCategoryId(category?.id ?? null);
+        onClose();
+    };
+
     return (
-        <aside className="w-70 h-[calc(100vh-5rem)] pt-11 bg-white">
+        <>
+            {isOpen && (
+                <div
+                onClick={onClose}
+                className="fixed inset-0 bg-black/40 z-40 md:hidden"
+                />
+            )}
 
-            <p className="ml-3 text-[1.5rem] font-semibold">
-                {user?.displayName ?? "사용자"}님, 환영합니다.
-            </p>
-
-            <button
-            onClick={goToWriteNote}
-            className="
-                black-btn 
-                flex justify-center items-center 
-                w-64 h-12 mt-6 ml-3 
-                text-xl"
+            <aside className={`
+                fixed md:static top-0 left-0 
+                z-50 md:z-0
+                w-72 md:w-70 h-screen md:h-[calc(100vh-5rem)]
+                bg-white
+                shadow-xl md:shadow-none
+                transition-transform duration-300
+                ${isOpen ? "translate-x-0" : "-translate-x-full"}
+                md:translate-x-0
+                overflow-y-auto`}
             >
-                <img src={plus} className="w-4 h-4 mr-3"/>
-                노트 작성
-            </button>
-
-            <button
-            onClick={() => setInputModalOpen(true)}
-            className="
-                black-btn 
-                flex justify-center items-center 
-                w-64 h-12 
-                mt-6 ml-3 
-                text-xl"
-            >
-
-                <img src={plus} className="w-4 h-4 mr-3" />
-                카테고리 작성
-
-            </button>
-
-            <p className="ml-3 mt-6 text-[1.2rem] font-semibold">
-                카테고리
-            </p>
-
-            <ul className="overflow-y-auto w-64 h-80 ml-3">
-                <li onClick={() => setCategory(null)} className="mt-4 font-medium cursor-pointer">전체 노트</li>
-
-                {categories.map((category) => (
-                    <li
-                    key={category.id}
-                    onClick={() => setCategory(category)}
-                    className="
-                        flex justify-between items-center 
-                        mt-4 
-                        font-medium"
+                <div className="flex items-center justify-between px-4 pt-5 md:hidden">
+                    <button
+                    onClick={onClose}
+                    className="text-2xl leading-none p-1 -ml-1"
+                    aria-label="메뉴 닫기"
                     >
-                        <p className="truncate w-20">
-                            {category.name}
-                        </p>
-                        
-                        <span className="flex justify-between w-16">
+                        ✕
+                    </button>
+                </div>
 
-                            <img
-                            src={modify}
-                            onClick={() => openEditModal(category.id, category.name)}
-                            className="w-4 cursor-pointer"
-                            />
+                <p className="
+                    break-keep
+                    px-4 md:px-0 md:ml-3
+                    mt-3 md:mt-11
+                    text-[1.25rem] md:text-[1.5rem] font-semibold leading-snug"
+                >
+                    {user?.displayName ?? "사용자"}님, 환영합니다.
+                </p>
 
-                            <img
-                            src={del}
-                            onClick={() => openDeleteModal(category.id, category.name)}
-                            className="w-4 cursor-pointer"
-                            />
+                <div className="px-4 md:px-0">
 
-                        </span>
+                    <button
+                    onClick={goToWriteNote}
+                    className="
+                        black-btn 
+                        flex justify-center items-center 
+                        w-full md:w-64 h-12 mt-6 md:ml-3
+                        text-xl"
+                    >
 
+                        <img src={plus} className="w-4 h-4 mr-3"/>
+                        노트 작성
+
+                    </button>
+
+                    <button
+                    onClick={() => setIsInputModalOpen(true)}
+                    className="
+                        black-btn 
+                        flex justify-center items-center 
+                        w-full md:w-64 h-12 
+                        mt-4 md:mt-6 md:ml-3
+                        text-xl"
+                    >
+
+                        <img src={plus} className="w-4 h-4 mr-3" />
+                        카테고리 작성
+
+                    </button>
+
+                </div>
+
+                <p className="px-4 md:px-0 md:ml-3 mt-6 text-[1.2rem] font-semibold">
+                    카테고리
+                </p>
+
+                <ul className="overflow-y-auto w-full md:w-64 md:ml-3 px-2 md:px-0 pb-6">
+
+                    <li
+                    onClick={() => handleSelectCategory(null)}
+                    className={`
+                        mt-2
+                        px-3 py-3
+                        rounded-lg
+                        font-medium
+                        cursor-pointer
+                        ${selectedCategoryId === null ? "bg-gray-100" : "hover:bg-gray-50"}`}
+                    >
+                        전체 노트
                     </li>
-                ))}
-            </ul>
 
-            {inputModalOpen && (
-                <InputModal
-                message={editCategoryId ? "카테고리 수정" : "카테고리 추가"}
-                categoryName={categoryName}
-                setCategoryName={setCategoryName}
-                loading={loading}
-                addCategoryAndClose={editCategoryId ? updateCategory : addCategory}
-                onClose={closeInputModal}
-                />
-            )}
+                    {categories.map((category) => (
+                        <li
+                        key={category.id}
+                        onClick={() => handleSelectCategory(category)}
+                        className={`
+                            flex justify-between items-center 
+                            mt-2
+                            px-3 py-2
+                            rounded-lg
+                            font-medium
+                            cursor-pointer
+                            ${selectedCategoryId === category.id ? "bg-gray-100" : "hover:bg-gray-50"}`}
+                        >
+                            <p className="truncate flex-1">
+                                {category.name}
+                            </p>
+                            
+                            <span className="flex items-center gap-3 ml-2">
 
-            {selectionModalOpen && (
-                <SelectionModal
-                message={modalMessage}
-                yes={deleteCategoryAndClose}
-                no={closeSelectionModal}
-                />
-            )}
-        </aside>
+                                <button
+                                onClick={(e) => { e.stopPropagation(); openEditModal(category.id, category.name); }}
+                                className="p-2 -m-2"
+                                aria-label="카테고리 수정"
+                                >
+                                    <img src={modify} className="w-4"/>
+                                </button>
+
+                                <button
+                                onClick={(e) => { e.stopPropagation(); openDeleteModal(category.id, category.name); }}
+                                className="p-2 -m-2"
+                                aria-label="카테고리 삭제"
+                                >
+                                    <img src={del} className="w-4"/>
+                                </button>
+
+                            </span>
+
+                        </li>
+                    ))}
+
+                </ul>
+
+                {isModalOpen && (
+                    <Modal
+                    message={modalMessage}
+                    onClose={() => setIsModalOpen(false)}
+                    />
+                )}
+
+                {isInputModalOpen && (
+                    <InputModal
+                    message={editCategoryId ? "카테고리 수정" : "카테고리 추가"}
+                    categoryName={categoryName}
+                    setCategoryName={setCategoryName}
+                    loading={loading}
+                    addCategoryAndClose={editCategoryId ? updateCategory : addCategory}
+                    onClose={closeInputModal}
+                    />
+                )}
+
+                {isSelectionModalOpen && (
+                    <SelectionModal
+                    message={modalMessage}
+                    yes={deleteCategoryAndClose}
+                    no={closeSelectionModal}
+                    />
+                )}
+            </aside>
+        </>
     );
 }

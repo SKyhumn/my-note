@@ -21,7 +21,8 @@ export default function WriteNote({ category } : CategoryPresence){
     const [modalOpen, setModalOpen] = useState<boolean> (false);
     const [modalMessage, setModalMessage] = useState<string> ("");
 
-    const uid: string | undefined = auth.currentUser?.uid;
+    const user = auth.currentUser;
+    const uid = user?.uid;
 
     const isDisabled = loading || title.trim().length === 0;
 
@@ -36,20 +37,27 @@ export default function WriteNote({ category } : CategoryPresence){
     const saveNote = async() => {
         if (!uid || title.trim().length === 0) return;
 
-        setLoading(true);
+        try {
+            setLoading(true);
 
-        setModalOpen(false);
-        setModalMessage("");
+            setModalOpen(false);
+            setModalMessage("");
 
-        await addDoc(collection(db, "users", uid, "notes"), {
-            title:title,
-            content:content,
-            noteDate:new Date(),
-            categoryId:category?.id ?? null
-        });
+            const noteRef = collection(db, "users", uid, "notes")
+            await addDoc(noteRef, {
+                title:title,
+                content:content,
+                noteDate:new Date(),
+                categoryId:category?.id ?? null
+            });
 
-        setModalOpen(true);
-        setModalMessage("저장 되었습니다!");
+            setModalOpen(true);
+            setModalMessage("저장 되었습니다!");
+        } catch {
+            setModalOpen(true);
+            setModalMessage("저장에 실패했습니다.");
+        }
+        
     }
 
     // 창 닫고 메인 페이지로
@@ -63,9 +71,9 @@ export default function WriteNote({ category } : CategoryPresence){
 
             <Header/>
 
-            <div className="w-200 h-auto mx-auto">
+            <div className="w-full md:w-200 h-auto mx-auto px-4 md:px-0">
 
-                <p className="mt-10 text-xl">
+                <p className="mt-6 md:mt-10 text-lg md:text-xl">
                     제목
                 </p>
 
@@ -75,12 +83,12 @@ export default function WriteNote({ category } : CategoryPresence){
                 onChange={(e) => setTitle(e.target.value)} 
                 className="
                     w-full h-10 
-                    mt-5 pl-4 
+                    mt-4 md:mt-5 pl-4 
                     border border-gray-400 rounded-xl 
                     bg-white"
                 />
 
-                <p className="mt-8 text-xl">
+                <p className="mt-6 md:mt-8 text-lg md:text-xl">
                     내용
                 </p>
 
@@ -88,15 +96,15 @@ export default function WriteNote({ category } : CategoryPresence){
                 value={content} 
                 onChange={(e) => setContent(e.target.value)} 
                 className="
-                    w-full h-75 
-                    pt-4 pl-4 mt-5 
+                    w-full h-60 md:h-75 
+                    pt-4 pl-4 mt-4 md:mt-5 
                     border border-gray-400 
                     rounded-xl 
                     bg-white 
                     resize-none"
                 />
 
-                <div className="flex justify-end w-full mt-5">
+                <div className="flex justify-end gap-3 w-full mt-5 mb-6 md:mb-0">
 
                     <button 
                     onClick={goMain} 
@@ -105,7 +113,7 @@ export default function WriteNote({ category } : CategoryPresence){
                         gray-btn 
                         h-10 
                         pl-4 pr-4 
-                        text-xl 
+                        text-base md:text-xl 
                         cursor-pointer"
                     >
                         뒤로가기
@@ -116,8 +124,8 @@ export default function WriteNote({ category } : CategoryPresence){
                     disabled={isDisabled} 
                     className={`
                         h-10 
-                        ml-5 pl-4 pr-4  
-                        text-xl cursor-pointer
+                        pl-4 pr-4  
+                        text-base md:text-xl cursor-pointer
                         ${!isDisabled ? "black-btn" : "gray-btn"}
                     `}>
                         저장하기
