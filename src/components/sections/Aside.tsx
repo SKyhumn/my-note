@@ -135,6 +135,7 @@ export default function Aside({ user, setCategory, isOpen, onClose }: Props) {
         if (!uid || !deleteCategoryId) return;
 
         try {
+
             const q = query(
                 collection(db, "users", uid, "notes"),
                 where("categoryId", "==", deleteCategoryId)
@@ -201,12 +202,13 @@ export default function Aside({ user, setCategory, isOpen, onClose }: Props) {
                 md:translate-x-0
                 overflow-y-auto`}
             >
+
                 <div className="flex items-center justify-between px-4 pt-5 md:hidden">
                     <button
                     onClick={onClose}
                     className="text-2xl leading-none p-1 -ml-1"
                     aria-label="메뉴 닫기"
-                    >
+                >
                         ✕
                     </button>
                 </div>
@@ -271,6 +273,7 @@ export default function Aside({ user, setCategory, isOpen, onClose }: Props) {
                     >
                         전체 노트
                     </li>
+
 
                     {categories.map((category) => (
                         <li

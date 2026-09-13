@@ -23,7 +23,7 @@ export default function NoteLoading(){
                     bg-gray-300"
                 />
             </div>
-
+            
         </div>
     );
 }

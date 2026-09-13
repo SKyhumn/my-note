@@ -81,6 +81,7 @@ export default function WrittenNote(){
                 flex flex-col justify-center 
                 w-full md:w-200 h-auto 
                 mx-auto px-4 md:px-0"
+
             >
                 {note ? (
                     <>
@@ -133,6 +134,7 @@ export default function WrittenNote(){
                                     black-btn 
                                     flex-1 sm:w-20 sm:flex-none p-2 
                                     text-lg md:text-xl font-semibold"
+
                                 >
                                     수정
                                 </button>
@@ -143,6 +145,7 @@ export default function WrittenNote(){
                                     red-btn 
                                     flex-1 sm:w-20 sm:flex-none p-2 
                                     text-lg md:text-xl font-semibold"
+
                                 >
                                     삭제
                                 </button>

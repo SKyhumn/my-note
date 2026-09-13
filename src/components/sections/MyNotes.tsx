@@ -3,12 +3,15 @@ import { useState, useEffect } from "react";
 import { auth } from "../../SDK/firebase";
 
 import type { ANote } from "../../types/ANote";
+
 import type { Category } from "../../types/Category";
+
 
 import { db } from "../../SDK/firebase";
 import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
 
 import Note from "../Note";
+
 import NoteLoading from "../NoteLoading";
 
 interface Props {
@@ -17,6 +20,7 @@ interface Props {
 
 export default function MyNotes({ category }: Props){
     const [notes, setNotes] = useState<ANote[]>([]);
+
 
     const [search, setSearch] = useState<string>("");
 
@@ -85,6 +89,7 @@ export default function MyNotes({ category }: Props){
 
             </div>
 
+
             <div className="overflow-y-auto w-full h-[80%] md:h-[87%]">
                 <div className="
                     grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-12 
@@ -115,6 +120,7 @@ export default function MyNotes({ category }: Props){
                     )}
                     
                 </div>
+
             </div>
 
         </div>

@@ -120,6 +120,7 @@ export default function Edit({ category }: CategoryPresence) {
                     onClick={goMain}
                     disabled={loading}
                     className="gray-btn h-10 pl-4 pr-4 text-base md:text-xl cursor-pointer"
+
                 >
                     뒤로가기
                 </button>
@@ -128,6 +129,7 @@ export default function Edit({ category }: CategoryPresence) {
                     onClick={saveNote}
                     disabled={isDisabled}
                     className={`h-10 pl-4 pr-4 text-base md:text-xl cursor-pointer ${
+
                     !isDisabled ? "black-btn" : "gray-btn"
                     }`}
                 >
