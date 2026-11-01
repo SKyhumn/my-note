@@ -94,8 +94,8 @@ React와 Firebase를 활용하여 인증, 실시간 데이터 처리, 상태 관
   - 로그인 창 내에서 로그인 모드와 회원가입 모드 전환
   - 로그인 후에도 창이 유지되는 문제 발생
 - 해결
-  - AuthModal 컴포넌트에서 mode 상태 선언 후 SignIn.tsx / SignUp.tsx에 mode 상태 변환 함수를 props로 전달
-  - App.tsx에서 user 상태 선언 후 onAuthStateChanged를 통해 유저 유무 상태 확인
+  - `AuthModal` 컴포넌트에서 `mode` 상태 선언 후 `SignIn.tsx` / `SignUp.tsx`에 `mode` 상태 변환 함수를 props로 전달
+  - `App.tsx`에서 `user` 상태 선언 후 `onAuthStateChanged`를 통해 유저 유무 상태 확인
 
 ### DB 구조 구축 문제
 - 문제
@@ -108,9 +108,9 @@ React와 Firebase를 활용하여 인증, 실시간 데이터 처리, 상태 관
   - 이를 통해 사용자별 데이터 접근을 명확히 하고 확장성을 고려한 구조 설계
 
 ### 노트 로딩 문제
-- 문제: getDocs 사용 시 메인페이지가 새로고침이 되야만 노트 리스트 상태 변화
+- 문제: `getDocs` 사용 시 메인페이지가 새로고침이 되야만 노트 리스트 상태 변화
 - 해결
-  - getDocs 대신 onSnapshot사용으로 노트 데이터 실시간 로딩
+  - `getDocs` 대신 `onSnapshot`사용으로 노트 데이터 실시간 로딩
   - 이를 통해 사용자 경험을 개선하고 불필요한 새로고침을 제거
 
 ## 📖 배운 점
